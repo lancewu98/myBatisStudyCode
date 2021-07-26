@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<!--configuration 核心配置文件 这里标签是有顺序的-->
+<configuration>
+
+    <!--引入外部配置文件 1.这里可以不自闭合，然后引入配置文件中没有的新的property 2.如果存在同名，优先使用外部配置里的配置-->
+    <properties resource="db.properties">
+        <property name="username" value="root"/>
+        <property name="pwd" value="root"/>
+    </properties>
+
+    <!--配置-->
+    <settings>
+        <!--日志配置-->
+<!--        <setting name="logImpl" value="STDOUT_LOGGING"/>-->
+        <!--开启驼峰命名-->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <!--给类取别名，就不需要写长限定名了-->
+    <typeAliases>
+        <!--按照长路径div改名-->
+        <typeAlias type="com.example.pojo.User" alias="User"/>
+        <!--扫描整个包下面的类，把所有类的别名设置为类名的首字母小写,需要修改别名可以在实体类上用@Alias（“别名”）来改-->
+        <package name="com.example.pojo"/>
+    </typeAliases>
+
+    <!--可以存在多个环境，默认选择了development-->
+    <environments default="development">
+        <environment id="development">
+            <!--事务管理器 除了JDBC还有一个Managed（旧，现在不用）-->
+            <transactionManager type="JDBC"/>
+            <!--数据源（连接池） 除了POOLED还有UNPOOLED(不使用池)，JNDI（旧，现在不用）-->
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <!--这里如果url是直接配置，需要把“&”写成“&amp;”进行转义-->
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${pwd}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+<!--映射器  每一个mapper都需要在这里注册-->
+    <mappers>
+        <!--resource的路径是“/”而不是“.”-->
+        <!--使用配置文件写sql的话，映射尽量用resource，用class或者package会有一些限制-->
+        <mapper resource="com/example/dao/UserMapper.xml"/>
+        <!--使用注解写sql的话，映射用class-->
+        <mapper class="com.example.dao.UserMapper4Annotation"/>
+
+<!--        <mapper class="com.example.dao.TeacherMapper"/>-->
+        <mapper resource="StudentMapper.xml"/>
+        <mapper resource="TeacherMapper.xml"/>
+        <mapper class="com.example.dao.BlogMapper"/>
+    </mappers>
+</configuration>

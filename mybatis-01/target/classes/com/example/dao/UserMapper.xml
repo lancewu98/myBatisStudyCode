@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace 绑定一个dao/mapper接口 注意路径是.不是/-->
+<mapper namespace="com.example.dao.UserMapper">
+    <!--id：对应namespace里的方法名-->
+    <!--resultType：sql语句执行的返回值，不写集合，写集合里的泛型即可-->
+    <!--parameterType：参数类型，如果是基础参数类型可以不写（如int）-->
+    <!--这里的resultType原本应该写长路径com.example.pojo.User，但是因为在mybatis-config.xml里配置了别名才可以简写成User的-->
+    <select id="getUserList" resultType="User">
+    select * from user
+  </select>
+
+    <select id="getUserById" parameterType="int" resultType="User">
+        select * from user where id = #{id}
+    </select>
+
+    <insert id="addUser" parameterType="User">
+        insert into user (id,name,pwd) values (#{id},#{name},#{pwd})
+    </insert>
+
+    <update id="updateUser" parameterType="User">
+        update user set name=#{name},pwd=#{pwd} where id = #{id}
+    </update>
+
+    <delete id="deleteUser" parameterType="int">
+        delete from user where id=#{id}
+    </delete>
+
+    <!--使用map，属性名可以任取，只要和map里面的键一样就行。而使用实体类的话不行-->
+    <!--且使用map可以减少传参的数量，实体类必须new出来-->
+    <!--这里直接写的“map”是因为这是mybatis对Map的默认别名，如果是基础类型前面加_就可以，如_int对应int，而int是对应Integer-->
+    <insert id="addUserByMap" parameterType="map">
+        insert into user (id,name,pwd) values (#{userId},#{userName},#{passWord})
+    </insert>
+
+    <!--模糊查询，这里可以写 "%"#{value}"%"-->
+    <select id="getUserLike" resultType="User">
+        select * from user where name like #{value}
+    </select>
+
+    <!--结果集映射  遇到数据库字段和实体类属性不同时候使用，使用的地方就不需要用resultType了-->
+    <!--property:实体类属性名 column:数据库字段名-->
+    <resultMap id="User2Map" type="User2">
+    <!--只写需要映射的字段，属性名和字段名一样的不需要显示映射-->
+        <result property="password" column="pwd"/>
+    </resultMap>
+
+    <select id="getUser2ById" resultMap="User2Map">
+        select id,name,pwd from user where id = #{id}
+    </select>
+
+    <select id="getUserByLimit" parameterType="map" resultType="user">
+        select * from mybatis.user limit #{startIndex},#{pageSize}
+    </select>
+
+</mapper>
